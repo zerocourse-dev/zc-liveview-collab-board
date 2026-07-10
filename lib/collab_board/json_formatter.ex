@@ -63,8 +63,10 @@ defmodule CollabBoard.JsonFormatter do
   defp exception_info({:failed, failures}) do
     failures
     |> Enum.map(fn
-      {_, %{message: msg}} -> msg
-      _ -> "unknown error"
+      {_kind, %{message: msg}, _stack} when is_binary(msg) -> msg
+      {_kind, reason, _stack} -> inspect(reason)
+      {_kind, %{message: msg}} -> msg
+      other -> inspect(other)
     end)
     |> Enum.join("\n")
   end
